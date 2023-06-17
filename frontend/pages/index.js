@@ -86,7 +86,7 @@ function Login() {
                     <div class="row">
                         <div class="col-sm-12 mb-3">
                             <label>Your Email</label>
-                            <input type="email" class={styles.inputfield} name="email" value={loginInput.email} required onChange={handleChange} />
+                            <input type="text" class={styles.inputfield} name="email" value={loginInput.email}  onChange={handleChange} />
                         </div>
                         {/* <div class="col-sm-6 mb-3">
                   <label>Last Name</label>

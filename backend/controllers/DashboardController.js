@@ -31,11 +31,37 @@ const countActiveInactiveUsers = async (req, res) => {
 
 }
 const getAllUsers = async (req, res) => {
-  const all_users = await User.find();
-  res.json({
-    status: 200,
-    all_users: all_users
-  })
+  // const all_users = await User.find().lean().exec();
+  // res.json({
+  //   status: 200,
+  //   all_users: all_users
+  // })
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number
+    const limit = 1000; // Number of users per page (set to 50)
+
+    const startIndex = (page - 1) * limit;
+
+    // Fetch a chunk of users based on the startIndex and limit
+    const users = await User.find()
+      .skip(startIndex)
+      .limit(limit)
+      .lean()
+      .exec();
+
+    res.json({
+      status: 200,
+      all_users: users,
+      page,
+      limit,
+    });
+  } catch (error) {
+    console.error('Error occurred while fetching users:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'An error occurred while fetching users.',
+    });
+  }
 }
 
 const filterUserStatus = async (req, res) => {

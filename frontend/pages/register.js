@@ -23,7 +23,7 @@ import { useRouter } from 'next/router';function Register() {
 
    const handleRegisterSubmit=(e)=>{
     e.preventDefault();
-    axios.post(`/api/register`, registerInputState).then(res => {
+    axios.post(`/api/register`).then(res => {
         if (res.data.status == 200) {
             // navigate('/login')
             router.push('/');
@@ -35,6 +35,9 @@ import { useRouter } from 'next/router';function Register() {
                     confirm_password:""
             });
     
+        }
+        else{
+            Swal.fire('eror while inserting')
         }
     });
    }

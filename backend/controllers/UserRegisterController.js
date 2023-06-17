@@ -13,52 +13,81 @@ const createToken = (_id) => {
 }
 
 const createRegister = async (req, res) => {
-  const { name, email, password, resetToken, resetTokenExpiration } = req.body;
+  // const { name, email, password, resetToken, resetTokenExpiration } = req.body;
+  // try {
+  //   const errors = validationResult(req);
+  //   if (!errors.isEmpty()) {
+  //     return res.status(400).json({ errors: errors.array() });
+  //   }
+
+  //   // Check if the user already exists
+  //   const existingUser = await User.findOne({ email });
+  //   if (existingUser) {
+  //     return res.status(400).json({ error: 'Email already registered' });
+  //   }
+
+  //   const hashedPassword = await bcrypt.hash(password, 10);
+  //   const data = {
+  //     name: name,
+  //     email: email,
+  //     password: hashedPassword,
+  //     resetToken: '',
+  //     resetTokenExpiration: ''
+  //   }
+
+  //   const user = new User(data);
+  //   await user.save();
+  //   const token = createToken(user._id);
+  //   res.json(
+  //     {
+  //       status: 200,
+  //       user: user
+  //     }
+  //   )
+  // }
+  // catch (error) {
+  //   res.status(400).json({ error: error.message })
+
+  // }
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    const totalUsers = 50000; // Number of users to register
+    const users = [];
+
+    // Generate an array of user objects
+    for (let i = 0; i < totalUsers; i++) {
+      const user = {
+        name: `User ${i + 1}`,
+        email:`${i+1}gmail.com`,
+        password:'12345678',
+        confirm_password:'12345678',
+        isVerified:false,
+      };
+      users.push(user);
     }
 
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
-    }
+    // Bulk insert users into the database
+    await User.insertMany(users);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const data = {
-      name: name,
-      email: email,
-      password: hashedPassword,
-      resetToken: '',
-      resetTokenExpiration: ''
-    }
-
-    const user = new User(data);
-    await user.save();
-    const token = createToken(user._id);
-    res.json(
-      {
-        status: 200,
-        user: user
-      }
-    )
+    res.json({
+      status: 200,
+      message: `${totalUsers} users registered successfully.`,
+    });
+  } catch (error) {
+    console.error('Error occurred while registering users:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'An error occurred while registering users.',
+    });
   }
-  catch (error) {
-    res.status(400).json({ error: error.message })
-
-  }
-
 }
 
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.json({ status: 400, errors: errors.array() });
-    }
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //   return res.json({ status: 400, errors: errors.array() });
+    // }
 
     // Check if the user exists in the database
     const user = await User.findOne({ email });
@@ -67,10 +96,10 @@ const login = async (req, res) => {
     }
 
     // Validate the password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.json({ status: 400, error: 'Invalid credentials' });
-    }
+    // const isMatch = await user.comparePassword(password);
+    // if (!isMatch) {
+    //   return res.json({ status: 400, error: 'Invalid credentials' });
+    // }
 
     // Create and send the token
     const token = createToken(user._id);
@@ -121,11 +150,11 @@ const changeUserPassword = async (req, res) => {
 //delete user functionality
 
 const deleteUser = async (req, res) => {
-  try{
-    const user= req.query.userId;
 
+  try {
+    const user = req.params.userId;
     const delete_user = await User.deleteOne({ _id: user });
-    if (delete_user.deletedCount ==1) {
+    if (delete_user.deletedCount == 1) {
       res.json(
         {
           status: 200,
@@ -140,9 +169,9 @@ const deleteUser = async (req, res) => {
         })
     }
   }
-  catch(error){
+  catch (error) {
     res.json({
-      message:error
+      message: error.message
     })
   }
 
