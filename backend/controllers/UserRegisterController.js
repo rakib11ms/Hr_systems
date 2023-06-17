@@ -427,6 +427,9 @@ const checkmail = async (req, res) => {
 
 
 }
+const modifyUserData=async (req,res)=>{
+
+}
 
 
 
@@ -434,6 +437,6 @@ const checkmail = async (req, res) => {
 
 
 module.exports = {
-  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser
+  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData
 }
 

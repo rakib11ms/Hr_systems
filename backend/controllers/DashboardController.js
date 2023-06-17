@@ -38,7 +38,7 @@ const getAllUsers = async (req, res) => {
   // })
   try {
     const page = parseInt(req.query.page) || 1; // Current page number
-    const limit = 1000; // Number of users per page (set to 50)
+    const limit = 500; // Number of users per page (set to 50)
 
     const startIndex = (page - 1) * limit;
 
@@ -63,6 +63,8 @@ const getAllUsers = async (req, res) => {
     });
   }
 }
+
+
 
 const filterUserStatus = async (req, res) => {
   const status = req.params.status;

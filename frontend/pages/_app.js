@@ -2,6 +2,9 @@ import '../styles/globals.css'
 import Script from "next/script";
 import Head from "next/head";
 import axios from 'axios';
+import { useState, useEffect } from 'react';
+
+import Router from 'next/router';
 
 axios.defaults.baseURL = 'http://localhost:9000/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -35,6 +38,27 @@ axios.interceptors.response.use(
   }
 );
 function MyApp({ Component, pageProps }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleRouteChangeStart = () => {
+    setLoading(true);
+  };
+
+  const handleRouteChangeComplete = () => {
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    Router.events.on('routeChangeStart', handleRouteChangeStart);
+    Router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    Router.events.on('routeChangeError', handleRouteChangeComplete);
+
+    return () => {
+      Router.events.off('routeChangeStart', handleRouteChangeStart);
+      Router.events.off('routeChangeComplete', handleRouteChangeComplete);
+      Router.events.off('routeChangeError', handleRouteChangeComplete);
+    };
+  }, []);
 
   return (
     <>
@@ -43,8 +67,15 @@ function MyApp({ Component, pageProps }) {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       </Head>
 
-      <Component {...pageProps} />
-    </>)
+      <div>
+        {loading ? (
+          // Render your loader component here
+          <div>Loading...</div>
+        ) : (
+          // Render the actual page component when not loading
+          <Component {...pageProps} />
+        )}
+      </div>    </>)
 }
 
 export default MyApp
