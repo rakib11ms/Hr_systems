@@ -5,8 +5,12 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const path = require('path');
 const Queue = require('bull');
+
+const path = require('path');
+const multer = require('multer')
+
+
 
 const updateUserTable = async (req, res) => {
 
@@ -76,7 +80,7 @@ const filterUserStatus = async (req, res) => {
         users: users
       });
     }
-    else{
+    else {
       const users = await User.find({ isVerified: status });
 
       res.json({
@@ -84,7 +88,7 @@ const filterUserStatus = async (req, res) => {
         users: users
       });
     }
- 
+
   }
   catch (error) {
     res.json({
@@ -94,6 +98,30 @@ const filterUserStatus = async (req, res) => {
   }
 
 }
+
+
+
+const uploadFile = async (req, res) => {
+ 
+  try {
+    // Check if a file was uploaded
+    if (!req.file) {
+      throw new Error('No file uploaded');
+    }
+
+    // Process the uploaded file here if needed
+
+    res.json({
+      status: 200,
+      message: "File uploaded successfully"
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 400,
+      error: error.message
+    });
+  }
+}
 module.exports = {
-  updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus
+  updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus, uploadFile
 }

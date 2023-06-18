@@ -3,8 +3,23 @@ const express = require('express');
 const router = express.Router();
 const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData } = require('../controllers/UserRegisterController')
 const isAuthenticated = require('../middleware/auth')
-const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus} = require('../controllers/DashboardController')
+const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus,uploadFile} = require('../controllers/DashboardController')
 
+const path = require('path');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // router.post('/register',  [
 //     check('name').notEmpty().withMessage('Name is required'),
@@ -25,6 +40,7 @@ router.get('/all-users', getAllUsers)
 router.get('/filter-user-status/:status', filterUserStatus)
 router.delete('/delete-user/:userId', deleteUser)
 router.get('/modify-user-data', modifyUserData)
+router.post('/upload-file',upload.single('image'),uploadFile)
 
 
 
