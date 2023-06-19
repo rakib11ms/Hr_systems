@@ -1,7 +1,7 @@
 const { check, validationResult } = require('express-validator');
 const express = require('express');
 const router = express.Router();
-const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData } = require('../controllers/UserRegisterController')
+const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData,editUser } = require('../controllers/UserRegisterController')
 const isAuthenticated = require('../middleware/auth')
 const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus,uploadFile} = require('../controllers/DashboardController')
 
@@ -41,6 +41,7 @@ router.get('/filter-user-status/:status', filterUserStatus)
 router.delete('/delete-user/:userId', deleteUser)
 router.get('/modify-user-data', modifyUserData)
 router.post('/upload-file',upload.single('image'),uploadFile)
+router.get('/edit-user/:id',editUser)
 
 
 

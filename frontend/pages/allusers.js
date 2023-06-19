@@ -12,6 +12,7 @@ function allusers({data}) {
   // const [loading, setLoading] = useState(false);
 
     const [usersData, setUsersData] = useState(data);
+    // console.log('data',data)
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [filterValue, setFilterValue] = useState('all');
@@ -108,7 +109,7 @@ function allusers({data}) {
                           <TableCell>{item.isVerified ? 'Active' : 'Inactive'}</TableCell>
                           <TableCell>
                             <div className="">
-                                <a href="/edit-user">
+                                <a href={`/edit-user/${item._id}`}>
                                 <i className="fa fa-edit">
                                 </i>
 

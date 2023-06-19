@@ -431,12 +431,27 @@ const modifyUserData=async (req,res)=>{
 
 }
 
+const editUser=async (req,res)=>{
+  try{
+    const find_user=await User.find({_id:req.params.id})
+    res.json({
+      status:200,
+      data:find_user
+    })
 
+  }
+  catch(error){
+    res.json({
+      status:400,
+      message:error
+    })
+  }
+}
 
 
 
 
 module.exports = {
-  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData
+  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData,editUser
 }
 
