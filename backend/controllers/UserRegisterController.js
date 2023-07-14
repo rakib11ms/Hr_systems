@@ -15,6 +15,7 @@ const createToken = (_id) => {
 const createRegister = async (req, res) => {
   const { name, email, password, resetToken, resetTokenExpiration } = req.body;
   const password1=req.body.password;
+
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

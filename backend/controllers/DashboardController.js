@@ -35,11 +35,7 @@ const countActiveInactiveUsers = async (req, res) => {
 
 }
 const getAllUsers = async (req, res) => {
-  // const all_users = await User.find().lean().exec();
-  // res.json({
-  //   status: 200,
-  //   all_users: all_users
-  // })
+
   try {
     const page = parseInt(req.query.page) || 1; // Current page number
     const limit = 100; // Number of users per page (set to 50)
@@ -53,11 +49,14 @@ const getAllUsers = async (req, res) => {
       .lean()
       .exec();
 
+      const user_info=req.user;
+
     res.json({
       status: 200,
       all_users: users,
       page,
       limit,
+      user_info:req.user
     });
   } catch (error) {
     console.error('Error occurred while fetching users:', error);
