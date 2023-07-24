@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   confirm_password: { type: String},
   resetToken:{type:String},
   resetTokenExpiration:{type:String},
+  role:{type:String,default:'User'},
   isVerified: {
     type: Boolean,
     default: true // default value for the field (optional)

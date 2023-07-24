@@ -16,7 +16,7 @@ const updateUserTable = async (req, res) => {
 
   await User.find({}).updateMany(
     {}, // Empty filter to match all documents
-    { $set: { isVerified: false } } // $set operator to add the new field
+    { $set: { isVerified: false,role:'User' }} // $set operator to add the new field
   )
   res.json({
     status: 200,

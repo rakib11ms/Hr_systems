@@ -12,7 +12,6 @@ function isAuthenticated(req, res, next) {
     // Verify the token
     const decoded = jwt.verify(token, process.env.SECRET);
 
-    console.log('decoded',decoded)
 
     // Pass the authenticated user ID to the next middleware or route handler
     // req.userId = decoded.userId;
@@ -26,4 +25,35 @@ function isAuthenticated(req, res, next) {
   }
 }
 
-module.exports = isAuthenticated;
+function roleCheck(roles){
+  return (req, res, next) => {
+    // Check if the authenticated user's role matches any of the specified roles
+    const userRole = req.user.role; // Assuming the user role is stored in the 'role' property
+    console.log('user role',userRole)
+    if (roles.includes(userRole)) {
+      // User has the required role, proceed to the next middleware or route handler
+      next();
+    } else {
+      // User does not have the required role, return an error response
+      res.status(403).json({ error: `You don't have access this` });
+    }
+  };
+}
+// function roleCheck(role, permission) {
+//   return (req, res, next) => {
+//     // Check if the authenticated user's role and permission match the required role and permission
+//     const userRole = req.user.role; // Assuming the user role is stored in the 'role' property
+//     const userPermissions = req.user.permissions; // Assuming user permissions are stored in the 'permissions' property
+
+//     if (userRole === role && userPermissions.includes(permission)) {
+//       // User has the required role and permission, proceed to the next middleware or route handler
+//       next();
+//     } else {
+//       // User does not have the required role and permission, return an error response
+//       res.status(403).json({ error: `You don't have access to ${permission} as ${role}` });
+//     }
+//   };
+// }
+
+
+module.exports = {isAuthenticated,roleCheck};

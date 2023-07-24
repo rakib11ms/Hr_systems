@@ -1,8 +1,8 @@
 const { check, validationResult,body} = require('express-validator');
 const express = require('express');
 const router = express.Router();
-const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData,editUser } = require('../controllers/UserRegisterController')
-const isAuthenticated = require('../middleware/auth')
+const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData,editUser,updateUser} = require('../controllers/AuthenticationController')
+const {isAuthenticated,roleCheck} = require('../middleware/auth')
 const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus,uploadFile} = require('../controllers/DashboardController')
 
 const path = require('path');
@@ -41,12 +41,13 @@ router.post('/check-mail', checkmail)
 
 router.post('/modify-users-table', updateUserTable)
 router.get('/count-active-inactive-users', countActiveInactiveUsers)
-router.get('/all-users',isAuthenticated,getAllUsers)
+router.get('/all-users',isAuthenticated,roleCheck(['User','Admin']),getAllUsers)
 router.get('/filter-user-status/:status', filterUserStatus)
 router.delete('/delete-user/:userId', deleteUser)
 router.get('/modify-user-data', modifyUserData)
 router.post('/upload-file',upload.single('image'),uploadFile)
 router.get('/edit-user/:id',editUser)
+router.put('/update-user/:id',updateUser)
 
 
 

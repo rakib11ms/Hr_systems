@@ -8,13 +8,13 @@ const crypto = require('crypto');
 const path = require('path');
 const Queue = require('bull');
 
-const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' })
+const createToken = (user) => {
+  return jwt.sign({ user }, process.env.SECRET, { expiresIn: '3d' })
 }
 
 const createRegister = async (req, res) => {
   const { name, email, password, resetToken, resetTokenExpiration } = req.body;
-  const password1=req.body.password;
+  const password1 = req.body.password;
 
   try {
     const errors = validationResult(req);
@@ -39,7 +39,7 @@ const createRegister = async (req, res) => {
 
     const user = new User(data);
     await user.save();
-    const token = createToken(user._id);
+    const token = createToken(user);
     res.json(
       {
         status: 200,
@@ -51,7 +51,7 @@ const createRegister = async (req, res) => {
     res.status(400).json({ error: error.message })
 
   }
- 
+
 }
 
 const login = async (req, res) => {
@@ -75,7 +75,7 @@ const login = async (req, res) => {
     }
 
     // Create and send the token
-    const token = createToken(user._id);
+    const token = createToken(user);
     res.json({ status: 200, user, token });
   } catch (error) {
     res.json({ status: 400, error: error.message });
@@ -409,31 +409,53 @@ const checkmail = async (req, res) => {
 
 
 }
-const modifyUserData=async (req,res)=>{
+const modifyUserData = async (req, res) => {
 
 }
 
-const editUser=async (req,res)=>{
-  try{
-    const find_user=await User.find({_id:req.params.id})
+const editUser = async (req, res) => {
+  try {
+    const find_user = await User.find({ _id: req.params.id })
     res.json({
-      status:200,
-      data:find_user
+      status: 200,
+      data: find_user
     })
 
   }
-  catch(error){
+  catch (error) {
     res.json({
-      status:400,
-      message:error
+      status: 400,
+      message: error
     })
   }
 }
 
+const updateUser = async (req, res) => {
+  const updates = req.body;
 
+  try {
+    // Find the user by email and update the information
+    const user = await User.findOneAndUpdate({ _id: req.params.id }, updates, { new: true });
+
+    if (!user) {
+      res.json({
+        status: 404,
+        message: 'User not found.'
+      })
+    }
+
+    return res.json({
+      status: 200,
+      user: user
+    })
+    
+  } catch (err) {
+    return res.status(500).json({ message: 'Error updating user.', error: err.message });
+  }
+}
 
 
 module.exports = {
-  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser,modifyUserData,editUser
+  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser, modifyUserData, editUser, updateUser
 }
 
