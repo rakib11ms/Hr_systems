@@ -46,6 +46,7 @@ const getAllUsers = async (req, res) => {
     const users = await User.find()
       .skip(startIndex)
       .limit(limit)
+      .populate('role') 
       .lean()
       .exec();
 
@@ -63,6 +64,7 @@ const getAllUsers = async (req, res) => {
     res.status(500).json({
       status: 500,
       message: 'An error occurred while fetching users.',
+      error:error
     });
   }
 }

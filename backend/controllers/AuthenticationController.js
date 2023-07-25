@@ -13,7 +13,7 @@ const createToken = (user) => {
 }
 
 const createRegister = async (req, res) => {
-  const { name, email, password, resetToken, resetTokenExpiration } = req.body;
+  const { name, email, password, resetToken, resetTokenExpiration,role} = req.body;
   const password1 = req.body.password;
 
   try {
@@ -34,7 +34,8 @@ const createRegister = async (req, res) => {
       email: email,
       password: hashedPassword,
       resetToken: '',
-      resetTokenExpiration: ''
+      resetTokenExpiration: '',
+      role:role
     }
 
     const user = new User(data);
@@ -136,11 +137,14 @@ const deleteUser = async (req, res) => {
   try {
     const user = req.params.userId;
     const delete_user = await User.deleteOne({ _id: user });
+    const all_users = await User.find({});
+
     if (delete_user.deletedCount == 1) {
       res.json(
         {
           status: 200,
-          message: "User deleted successfully"
+          message: "User deleted successfully",
+          all_users: all_users
         })
     }
     else {
@@ -448,7 +452,7 @@ const updateUser = async (req, res) => {
       status: 200,
       user: user
     })
-    
+
   } catch (err) {
     return res.status(500).json({ message: 'Error updating user.', error: err.message });
   }
