@@ -41,7 +41,7 @@ router.post('/check-mail', checkmail)
 
 router.post('/modify-users-table', updateUserTable)
 router.get('/count-active-inactive-users', countActiveInactiveUsers)
-// router.get('/all-users', isAuthenticated, roleCheck(['User', 'Admin']), getAllUsers)
+// router.get('/all-users', isAuthenticated, roleCheck(['Admin']), getAllUsers)
 router.get('/all-users', getAllUsers)
 router.get('/filter-user-status/:status', filterUserStatus)
 router.delete('/delete-user/:userId', deleteUser)

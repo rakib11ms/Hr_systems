@@ -1,4 +1,5 @@
 const User = require('../models/UserModel');
+const Role = require('../models/RoleModel');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
@@ -9,12 +10,17 @@ const path = require('path');
 const Queue = require('bull');
 
 const createToken = (user) => {
-  return jwt.sign({ user }, process.env.SECRET, { expiresIn: '3d' })
+  return jwt.sign(user, process.env.SECRET, { expiresIn: '3d' })
 }
 
 const createRegister = async (req, res) => {
-  const { name, email, password, resetToken, resetTokenExpiration,role} = req.body;
+  const { name, email, password, resetToken, resetTokenExpiration} = req.body;
   const password1 = req.body.password;
+
+  const role  = await Role.findOne({ _id: req.body.role }, { name: 1 });
+
+  // console.log('role name',role_name.name)
+
 
   try {
     const errors = validationResult(req);
@@ -35,12 +41,22 @@ const createRegister = async (req, res) => {
       password: hashedPassword,
       resetToken: '',
       resetTokenExpiration: '',
-      role:role
+     role: role._id 
     }
+    // const data2={
+    //   name: name,
+    //   email: email,
+    //   password: hashedPassword,
+    //   resetToken: '',
+    //   resetTokenExpiration: '',
+    //   role: role_name.name
+    // }
+
+    // console.log('data 2',data2)
 
     const user = new User(data);
     await user.save();
-    const token = createToken(user);
+    const token = createToken(data);
     res.json(
       {
         status: 200,

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Role = require('../models/RoleModel');
 
 // Middleware to check if the user is authenticated
 function isAuthenticated(req, res, next) {
@@ -29,7 +30,8 @@ function roleCheck(roles){
   return (req, res, next) => {
     // Check if the authenticated user's role matches any of the specified roles
     const userRole = req.user.role; // Assuming the user role is stored in the 'role' property
-    console.log('user role',userRole)
+
+    console.log('role name',userRole)
     if (roles.includes(userRole)) {
       // User has the required role, proceed to the next middleware or route handler
       next();

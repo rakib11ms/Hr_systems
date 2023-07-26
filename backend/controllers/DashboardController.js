@@ -38,9 +38,9 @@ const countActiveInactiveUsers = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-
     const users = await User.aggregate([
       // Step 1: Lookup to get role information
+
       {
         $lookup: {
           from: 'roles',
@@ -53,24 +53,26 @@ const getAllUsers = async (req, res) => {
       {
         $unwind: '$user_role'
       },
+
+
       // Step 3: Lookup to get role-wise permissions from RoleHasPermission collection
-      // {
-      //   $lookup: {
-      //     from: 'rolehaspermissions',
-      //     localField: 'user_role._id', // Remove the space after '_id'
-      //     foreignField: 'role_id', // Remove the space after 'role_id'
-      //     as: 'role_permissions'
-      //   }
-      // },
+      {
+        $lookup: {
+          from: 'rolehaspermissions',
+          localField: 'user_role._id', // Remove the space after '_id'
+          foreignField: 'role_id', // Remove the space after 'role_id'
+          as: 'role_permissions'
+        }
+      },
       // Step 4: Lookup to get permission names based on permission_ids
-      // {
-      //   $lookup: {
-      //     from: 'permissions',
-      //     localField: 'role_permissions.permission_id',
-      //     foreignField: '_id',
-      //     as: 'permissions'
-      //   }
-      // },
+      {
+        $lookup: {
+          from: 'permissions',
+          localField: 'role_permissions.permission_id',
+          foreignField: '_id',
+          as: 'permissions'
+        }
+      },
       // Step 5: Project only the necessary fields for the final output
       {
         $project: {
@@ -81,21 +83,20 @@ const getAllUsers = async (req, res) => {
           permissions: '$permissions.name'
         }
       }
+
+
     ]);
 
 
     return res.json({
       status: 200,
-      users: users
+      users: users,
     });
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
-
-
-
 
 
 
