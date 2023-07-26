@@ -4,7 +4,7 @@ const router = express.Router();
 const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser, modifyUserData, editUser, updateUser } = require('../controllers/AuthenticationController')
 const { isAuthenticated, roleCheck } = require('../middleware/auth')
 const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus, uploadFile } = require('../controllers/DashboardController')
-const {createRole, getAllRoleName,editRoleName, updateRole, deleteRole, createPermission, getAllPermissionName, updatePermission, deletePermission, editPermissionName}= require('../controllers/RolePermissionController');
+const {createRole, getAllRoleName,editRoleName, updateRole, deleteRole, createPermission, getAllPermissionName, updatePermission, deletePermission, editPermissionName, createRoleHasPermission, getAllRoleHasPermission}= require('../controllers/RolePermissionController');
 const path = require('path');
 const multer = require('multer');
 
@@ -62,6 +62,12 @@ router.get('/all-permissions',getAllPermissionName)
 router.get('/edit-permission/:id',editPermissionName)
 router.put('/update-permission/:id',updatePermission)
 router.delete('/delete-permission/:id',deletePermission)
+
+
+router.post('/create-role-has-permission',createRoleHasPermission)
+router.get('/role-has-permission',getAllRoleHasPermission)
+
+
 
 
 module.exports = router;

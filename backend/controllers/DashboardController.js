@@ -16,7 +16,7 @@ const updateUserTable = async (req, res) => {
 
   await User.find({}).updateMany(
     {}, // Empty filter to match all documents
-    { $set: { isVerified: false,role:'User' }} // $set operator to add the new field
+    { $set: { isVerified: false, role: 'User' } } // $set operator to add the new field
   )
   res.json({
     status: 200,
@@ -34,40 +34,68 @@ const countActiveInactiveUsers = async (req, res) => {
   })
 
 }
+
+
 const getAllUsers = async (req, res) => {
-
   try {
-    const page = parseInt(req.query.page) || 1; // Current page number
-    const limit = 100; // Number of users per page (set to 50)
 
-    const startIndex = (page - 1) * limit;
+    const users = await User.aggregate([
+      // Step 1: Lookup to get role information
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'user_role'
+        }
+      },
+      // Step 2: Unwind the user_role array (since lookup returns an array)
+      {
+        $unwind: '$user_role'
+      },
+      // Step 3: Lookup to get role-wise permissions from RoleHasPermission collection
+      // {
+      //   $lookup: {
+      //     from: 'rolehaspermissions',
+      //     localField: 'user_role._id', // Remove the space after '_id'
+      //     foreignField: 'role_id', // Remove the space after 'role_id'
+      //     as: 'role_permissions'
+      //   }
+      // },
+      // Step 4: Lookup to get permission names based on permission_ids
+      // {
+      //   $lookup: {
+      //     from: 'permissions',
+      //     localField: 'role_permissions.permission_id',
+      //     foreignField: '_id',
+      //     as: 'permissions'
+      //   }
+      // },
+      // Step 5: Project only the necessary fields for the final output
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          email: 1,
+          role: '$user_role.name',
+          permissions: '$permissions.name'
+        }
+      }
+    ]);
 
-    // Fetch a chunk of users based on the startIndex and limit
-    const users = await User.find()
-      .skip(startIndex)
-      .limit(limit)
-      .populate('role') 
-      .lean()
-      .exec();
 
-      const user_info=req.user;
-
-    res.json({
+    return res.json({
       status: 200,
-      all_users: users,
-      page,
-      limit,
-      user_info:req.user
+      users: users
     });
   } catch (error) {
-    console.error('Error occurred while fetching users:', error);
-    res.status(500).json({
-      status: 500,
-      message: 'An error occurred while fetching users.',
-      error:error
-    });
+    console.error(error);
+    throw error;
   }
-}
+};
+
+
+
 
 
 
@@ -103,7 +131,7 @@ const filterUserStatus = async (req, res) => {
 
 
 const uploadFile = async (req, res) => {
- 
+
   try {
     // Check if a file was uploaded
     if (!req.file) {

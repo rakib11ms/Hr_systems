@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const Role = require('../models/RoleModel');
 const Permission = require('../models/PermissionModel');
+const RoleHasPermission=require('../models/RoleHasPermissionModel');
 
 const createRole = async (req, res) => {
     const { name } = req.body;
@@ -115,7 +116,7 @@ const updatePermission = async (req, res) => {
 }
 
 const deletePermission = async (req, res) => {
-    const permission = await pPrmission.findOneAndDelete({ _id: req.params.id }, { new: true });
+    const permission = await Permission.findOneAndDelete({ _id: req.params.id }, { new: true });
     const allPermissions = await Role.find({});
 
     return res.json({
@@ -124,7 +125,40 @@ const deletePermission = async (req, res) => {
     })
 }
 
+const createRoleHasPermission=async (req,res)=>{
+    const role_id =req.body.role_id;
+    const permission_id =req.body.permission_id;
+    const data={
+        role_id:role_id,
+        permission_id:permission_id
+    }
+     try{
+        const save_role_permission= new RoleHasPermission(data);
+        await save_role_permission.save();
+        return res.json({
+            status: 200,
+            message:'role has permission created successfully',
+            data:save_role_permission
+         })
+
+     }
+     catch(err){
+        return res.json({
+            status: 400,
+            error: err
+        })
+     }
+
+    
+}
+
+const getAllRoleHasPermission = async (req, res) => {
+    const allRoleHasPermissions = await RoleHasPermission.find({});
+    return res.json({
+        status: 200,
+        allRoleHasPermissions: allRoleHasPermissions
+    })
+}
 
 
-
-module.exports = { createRole, getAllRoleName, editRoleName, updateRole, deleteRole, createPermission, getAllPermissionName, editPermissionName, updatePermission, deletePermission }
+module.exports = { createRole, getAllRoleName, editRoleName, updateRole, deleteRole, createPermission, getAllPermissionName, editPermissionName, updatePermission, deletePermission,createRoleHasPermission,getAllRoleHasPermission }
