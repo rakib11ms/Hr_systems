@@ -13,6 +13,24 @@ const userSchema = new mongoose.Schema({
     ref: 'Role', // 'Role' should match the model name for the Role collection
     default: null // default value for the field (optional)
   },
+  designation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Designation',
+  },
+  image: {
+    type: String,
+    default: null
+
+  },
+  present_address: {
+    type: String,
+    default: null
+  },
+  permanent_address: {
+    type: String,
+    default: null
+  }
+  ,
   isVerified: {
     type: Boolean,
     default: true // default value for the field (optional)

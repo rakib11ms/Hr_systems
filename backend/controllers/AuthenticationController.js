@@ -14,10 +14,11 @@ const createToken = (user) => {
 }
 
 const createRegister = async (req, res) => {
-  const { name, email, password, resetToken, resetTokenExpiration} = req.body;
+  const { name, email, password, resetToken, resetTokenExpiration, designation, present_address, permanent_address } = req.body;
+  console.log(req.body)
   const password1 = req.body.password;
 
-  const role  = await Role.findOne({ _id: req.body.role }, { name: 1 });
+  const role = await Role.findOne({ _id: req.body.role }, { name: 1 });
 
   // console.log('role name',role_name.name)
 
@@ -41,20 +42,19 @@ const createRegister = async (req, res) => {
       password: hashedPassword,
       resetToken: '',
       resetTokenExpiration: '',
-     role: role._id 
+      role: role._id,
+      designation: designation,
+      image: '',
+      present_address: present_address,
+      permanent_address: permanent_address
     }
-    // const data2={
-    //   name: name,
-    //   email: email,
-    //   password: hashedPassword,
-    //   resetToken: '',
-    //   resetTokenExpiration: '',
-    //   role: role_name.name
-    // }
 
-    // console.log('data 2',data2)
 
     const user = new User(data);
+       // If the image file is uploaded, assign the file name to the 'image' field
+       if (req.file) {
+        data.image = req.file.filename;
+      }
     await user.save();
     const token = createToken(data);
     res.json(
@@ -179,6 +179,21 @@ const deleteUser = async (req, res) => {
 
 
 }
+const deleteMany = async (req, res) => {
+  try {
+    const result = await User.deleteMany({});
+    return res.json({
+      status: 200,
+      message: 'All users deleted',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: 400,
+      error: error.message
+    });
+  }
+};
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -476,6 +491,6 @@ const updateUser = async (req, res) => {
 
 
 module.exports = {
-  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser, modifyUserData, editUser, updateUser
+  createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser, modifyUserData, editUser, deleteMany, updateUser
 }
 

@@ -130,7 +130,18 @@ const filterUserStatus = async (req, res) => {
 }
 
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
 
+const upload = multer({ storage: storage });
 const uploadFile = async (req, res) => {
 
   try {
@@ -152,6 +163,8 @@ const uploadFile = async (req, res) => {
     });
   }
 }
+
+
 module.exports = {
-  updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus, uploadFile
+  updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus, uploadFile,upload
 }
