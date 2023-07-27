@@ -1,46 +1,117 @@
 import axios from 'axios'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from '../styles/Auth.module.css'
 import Swal from 'sweetalert2';
 import Link from 'next/link';
-import { useRouter } from 'next/router';function Register() {
+import { useRouter } from 'next/router';
+
+function Register() {
+    const [allDesignation, setAllDesignation] = useState([])
+    const [allRoles, setAllRoles] = useState([])
+    useEffect(() => {
+        axios.get(`/api/all-designation`).then(res => {
+            if (res.data.status == 200) {
+                console.log('res', res)
+                setAllDesignation(res.data.allDesgination);
+
+            }
+        })
+        axios.get(`/api/all-roles`).then(res => {
+            if (res.data.status == 200) {
+                setAllRoles(res.data.allRoles);
+
+            }
+        })
+
+    }, [])
 
     // const navigate=useNavigate();
     const router = useRouter();
 
-    const [registerInputState,setRegisterInputState]=useState({
-        name:"",
-        email:"",
-        password:"",
-        confirm_password:""
+    const [image, setImage] = useState('');
+    console.log('image info', image.size)
+    const [picture, setPicture] = useState('');
+
+    const onChangePicture = e => {
+        console.log('picture: ', picture);
+        setPicture(URL.createObjectURL(e.target.files[0]));
+        setImage(e.target.files[0]);
+    };
+
+
+    const [registerInputState, setRegisterInputState] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+        present_address: "",
+        permanent_address: "",
+        role: "",
+        designation: ""
     })
 
-   const handleChange=(e)=>{
-    setRegisterInputState({
-        ...registerInputState,[e.target.name]:e.target.value
-    })
-   }
 
-   const handleRegisterSubmit=(e)=>{
-    e.preventDefault();
-    axios.post(`/api/register`).then(res => {
-        if (res.data.status == 200) {
-            // navigate('/login')
-            router.push('/');
+    const handleChange = (e) => {
+        setRegisterInputState({
+            ...registerInputState, [e.target.name]: e.target.value
+        })
+    }
 
-            setRegisterInputState({
-                    name:"",
-                    email:"",
-                    password:"",
-                    confirm_password:""
-            });
-    
-        }
-        else{
-            Swal.fire('eror while inserting')
-        }
-    });
-   }
+    // const handleRegisterSubmit = (e) => {
+    //     e.preventDefault();
+    //     axios.post(`/api/register`).then(res => {
+    //         if (res.data.status == 200) {
+    //             // navigate('/login')
+    //             router.push('/');
+
+    //             setRegisterInputState({
+    //                 name: "",
+    //                 email: "",
+    //                 password: "",
+    //                 confirm_password: ""
+    //             });
+
+    //         }
+    //         else {
+    //             Swal.fire('eror while inserting')
+    //         }
+    //     });
+    // }
+
+    const handleRegisterSubmit = (e) => {
+        e.preventDefault();
+        console.log('check',registerInputState)
+        const formData = new FormData();
+        formData.append('name', registerInputState.name);
+        formData.append('email', registerInputState.email);
+        formData.append('password', registerInputState.password);
+        formData.append('confirm_password', registerInputState.confirm_password);
+        formData.append('present_address', registerInputState.present_address);
+        formData.append('permanent_address', registerInputState.permanent_address);
+        formData.append('role', registerInputState.role);
+        formData.append('designation', registerInputState.designation);
+        formData.append('image', image);
+
+
+        console.log('check all data', formData);
+
+
+
+        axios.post(`/api/register`, formData).then(res => {
+            if (res.data.status == 200) {
+                Swal.fire(res.data.message, '', 'success')
+                router.push('/');
+        
+         
+            }
+            // else if (res.data.status == 400) {
+            //     setjobDesc({ ...jobDesc, error_list: res.data.errors });
+            //     Swal.fire(jobDesc.error_list.job_id[0], '', 'error')
+
+            // }
+        })
+
+    }
 
 
     return (
@@ -57,7 +128,7 @@ import { useRouter } from 'next/router';function Register() {
                     </p>
                     <div class={styles.formfield}>
                         <Link href="/">
-                        <input type="text" class="account" value="Have an Account?" />
+                            <input type="text" class="account" value="Have an Account?" />
 
                         </Link>
                     </div>
@@ -67,7 +138,7 @@ import { useRouter } from 'next/router';function Register() {
                     <div class="row">
                         <div class="col-sm-12 mb-3">
                             <label>Full Name</label>
-                            <input type="text" name="name" id="name" value={registerInputState.name} class={styles.inputfield} onChange={handleChange}/>
+                            <input type="text" name="name" id="name" value={registerInputState.name} class={styles.inputfield} onChange={handleChange} />
                         </div>
                         {/* <div class="col-sm-6 mb-3">
                     <label>Last Name</label>
@@ -81,12 +152,61 @@ import { useRouter } from 'next/router';function Register() {
                     <div class="row">
                         <div class="col-sm-6 mb-3">
                             <label>Password</label>
-                            <input type="password" name="password" id="password" class={styles.inputfield} value={registerInputState.password} onChange={handleChange}/>
+                            <input type="password" name="password" id="password" class={styles.inputfield} value={registerInputState.password} onChange={handleChange} />
                         </div>
                         <div class="col-sm-6 mb-3">
                             <label>Confirm Password</label>
-                            <input type="password" name="confirm_password" id="confirm_password"  value={registerInputState.confirm_password} onChange={handleChange} class={styles.inputfield} />
+                            <input type="password" name="confirm_password" id="confirm_password" value={registerInputState.confirm_password} onChange={handleChange} class={styles.inputfield} />
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            <label>Designation</label>
+                            <select class="form-select" aria-label="Default select example" name="designation" value={registerInputState.designation} onChange={handleChange}>
+                                <option selected>Choose</option>
+
+                                {
+                                    allDesignation.map((item, i) => {
+                                        return (
+                                            <>
+                                                <option value={item._id}>{item.name}</option>
+
+                                            </>
+                                        )
+                                    })
+                                }
+
+                            </select>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label>Role</label>
+                            <select class="form-select" aria-label="Default select example" name="role" value={registerInputState.role} onChange={handleChange}>
+                                <option selected>Choose</option>
+                                {
+                                    allRoles.map((item, i) => {
+                                        return (
+                                            <>
+                                                <option value={item._id}>{item.name}</option>
+
+                                            </>
+                                        )
+                                    })
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <label>Present Address</label>
+                        <input type="text" name="present_address" id="present_address" value={registerInputState.present_address} class={styles.inputfield} onChange={handleChange} />
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <label>Permanent Address</label>
+                        <input type="text" name="permanent_address" id="name" value={registerInputState.permanent_address} class={styles.inputfield} onChange={handleChange} />
+                    </div>
+
+                    <div class="col-sm-12 mb-3">
+                        <label for="formFile" class="form-label">User Image</label>
+                        <input class="form-control" type="file" id="formFile" name="image" onChange={onChangePicture} />
                     </div>
                     <div class="mb-3">
                         <label class={styles.option}>I agree to the <a href="#">Terms and Conditions</a>
