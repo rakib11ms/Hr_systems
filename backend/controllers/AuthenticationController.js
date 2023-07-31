@@ -8,7 +8,8 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
 const Queue = require('bull');
-
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const createToken = (user) => {
   return jwt.sign(user, process.env.SECRET, { expiresIn: '3d' })
 }
@@ -16,6 +17,7 @@ const createToken = (user) => {
 const createRegister = async (req, res) => {
   const { name, email, password, resetToken, resetTokenExpiration, designation, present_address, permanent_address } = req.body;
   console.log(req.body)
+
   const password1 = req.body.password;
 
   const role = await Role.findOne({ _id: req.body.role }, { name: 1 });
@@ -37,24 +39,24 @@ const createRegister = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password1, 10);
     const data = {
-      name: name,
-      email: email,
+      name: req.body.name,
+      email: req.body.email,
       password: hashedPassword,
       resetToken: '',
       resetTokenExpiration: '',
       role: role._id,
-      designation: designation,
+      designation: req.body.designation,
       image: '',
-      present_address: present_address,
-      permanent_address: permanent_address
+      present_address: req.body.present_address,
+      permanent_address: req.body.permanent_address
     }
 
-
     const user = new User(data);
-       // If the image file is uploaded, assign the file name to the 'image' field
-       if (req.file) {
-        data.image = req.file.filename;
-      }
+    // If the image file is uploaded, assign the file name to the 'image' field
+     if (req.file) {
+      console.log('file ache',req.file)
+      user.image = req.file.filename;
+    }
     await user.save();
     const token = createToken(data);
     res.json(
@@ -70,6 +72,7 @@ const createRegister = async (req, res) => {
   }
 
 }
+
 
 const login = async (req, res) => {
   const { email, password } = req.body;

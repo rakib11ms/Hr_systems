@@ -25,7 +25,7 @@ const {createDesignation, getAllDesignationName} = require('../controllers/Desig
 router.post('/register', [
   body('name').notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Invalid email').notEmpty().withMessage('Email is required'),
-], createRegister);
+],upload.single('image'), createRegister);
 
 router.post('/login', [
   body('email').notEmpty().withMessage("Email is required"), body('password').notEmpty().withMessage("Password is required")

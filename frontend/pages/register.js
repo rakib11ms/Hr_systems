@@ -32,11 +32,13 @@ function Register() {
     console.log('image info', image.size)
     const [picture, setPicture] = useState('');
 
-    const onChangePicture = e => {
-        console.log('picture: ', picture);
-        setPicture(URL.createObjectURL(e.target.files[0]));
-        setImage(e.target.files[0]);
-    };
+const onChangePicture = (e) => {
+  const selectedImage = e.target.files[0];
+  console.log('selectedImage: ', selectedImage);
+  setPicture(URL.createObjectURL(selectedImage));
+  setImage(selectedImage);
+};
+
 
 
     const [registerInputState, setRegisterInputState] = useState({
@@ -57,30 +59,10 @@ function Register() {
         })
     }
 
-    // const handleRegisterSubmit = (e) => {
-    //     e.preventDefault();
-    //     axios.post(`/api/register`).then(res => {
-    //         if (res.data.status == 200) {
-    //             // navigate('/login')
-    //             router.push('/');
 
-    //             setRegisterInputState({
-    //                 name: "",
-    //                 email: "",
-    //                 password: "",
-    //                 confirm_password: ""
-    //             });
-
-    //         }
-    //         else {
-    //             Swal.fire('eror while inserting')
-    //         }
-    //     });
-    // }
-
+  
     const handleRegisterSubmit = (e) => {
         e.preventDefault();
-        console.log('check',registerInputState)
         const formData = new FormData();
         formData.append('name', registerInputState.name);
         formData.append('email', registerInputState.email);
@@ -90,29 +72,24 @@ function Register() {
         formData.append('permanent_address', registerInputState.permanent_address);
         formData.append('role', registerInputState.role);
         formData.append('designation', registerInputState.designation);
-        formData.append('image', image);
-
-
-        console.log('check all data', formData);
-
-
-
-        axios.post(`/api/register`, formData).then(res => {
-            if (res.data.status == 200) {
-                Swal.fire(res.data.message, '', 'success')
-                router.push('/');
+        if (image) { // Check if the image exists before appending
+            formData.append('image', image);
+          }
         
-         
+      
+        console.log('check all data', formData.get('name'));
+        axios.post(`/api/register`, formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
             }
-            // else if (res.data.status == 400) {
-            //     setjobDesc({ ...jobDesc, error_list: res.data.errors });
-            //     Swal.fire(jobDesc.error_list.job_id[0], '', 'error')
-
-            // }
-        })
-
-    }
-
+          }).then((res) => {
+          if (res.data.status == 200) {
+            Swal.fire(res.data.message, '', 'success');
+            router.push('/');
+          }
+        });
+      };
+      
 
     return (
         <>
