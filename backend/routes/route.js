@@ -3,29 +3,29 @@ const express = require('express');
 const router = express.Router();
 const { createRegister, login, changeUserPassword, forgotPassword, checkmail, deleteUser, modifyUserData, editUser, updateUser,deleteMany } = require('../controllers/AuthenticationController')
 const { isAuthenticated, roleCheck } = require('../middleware/auth')
-const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus, uploadFile,upload} = require('../controllers/DashboardController')
+const { updateUserTable, countActiveInactiveUsers, getAllUsers, filterUserStatus, uploadFile} = require('../controllers/DashboardController')
 const { createRole, getAllRoleName, editRoleName, updateRole, deleteRole, createPermission, getAllPermissionName, updatePermission, deletePermission, editPermissionName, createRoleHasPermission, getAllRoleHasPermission } = require('../controllers/RolePermissionController');
 const path = require('path');
 const multer = require('multer');
 const {createDesignation, getAllDesignationName} = require('../controllers/DesignationController');
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'uploads/');
-//   },
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = Date.now();
-//     const ext = path.extname(file.originalname);
-//     cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-//   }
-// });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
 
-// const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
 router.post('/register', [
   body('name').notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Invalid email').notEmpty().withMessage('Email is required'),
-],upload.single('image'), createRegister);
+],upload.single('file'), createRegister);
 
 router.post('/login', [
   body('email').notEmpty().withMessage("Email is required"), body('password').notEmpty().withMessage("Password is required")

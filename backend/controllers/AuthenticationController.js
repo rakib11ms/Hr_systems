@@ -16,8 +16,12 @@ const createToken = (user) => {
 
 const createRegister = async (req, res) => {
   const { name, email, password, resetToken, resetTokenExpiration, designation, present_address, permanent_address } = req.body;
-  console.log(req.body)
-
+  console.log('body',req.body)
+  if (req.file) {
+    console.log(req.file);
+  } else {
+    console.log('No file uploaded');
+  }
   const password1 = req.body.password;
 
   const role = await Role.findOne({ _id: req.body.role }, { name: 1 });
@@ -38,6 +42,7 @@ const createRegister = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password1, 10);
+    // console.log('hased', hashedPassword)
     const data = {
       name: req.body.name,
       email: req.body.email,
@@ -53,8 +58,8 @@ const createRegister = async (req, res) => {
 
     const user = new User(data);
     // If the image file is uploaded, assign the file name to the 'image' field
-     if (req.file) {
-      console.log('file ache',req.file)
+    if (req.file) {
+      // console.log('file ache', req.file)
       user.image = req.file.filename;
     }
     await user.save();

@@ -9,6 +9,7 @@ import Router from 'next/router';
 axios.defaults.baseURL = 'http://localhost:9000/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Accept'] = 'application/json';
+
 // Add request interceptor to include the token in headers
 // axios.interceptors.request.use(
 //   (config) => {

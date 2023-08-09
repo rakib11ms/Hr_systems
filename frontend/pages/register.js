@@ -60,7 +60,11 @@ const onChangePicture = (e) => {
     }
 
 
-  
+    const config = {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      };
     const handleRegisterSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -73,16 +77,11 @@ const onChangePicture = (e) => {
         formData.append('role', registerInputState.role);
         formData.append('designation', registerInputState.designation);
         if (image) { // Check if the image exists before appending
-            formData.append('image', image);
+            formData.append('file', image);
           }
         
       
-        console.log('check all data', formData.get('name'));
-        axios.post(`/api/register`, formData,{
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          }).then((res) => {
+        axios.post(`/api/register`, formData,config).then((res) => {
           if (res.data.status == 200) {
             Swal.fire(res.data.message, '', 'success');
             router.push('/');
@@ -110,7 +109,7 @@ const onChangePicture = (e) => {
                         </Link>
                     </div>
                 </div>
-                <form class={styles.formright} id="registerForm" onSubmit={handleRegisterSubmit}>
+                <form class={styles.formright} id="registerForm" onSubmit={handleRegisterSubmit}  encType='multipart/form-data'> 
                     <h2 class="text-uppercase">Registration form</h2>
                     <div class="row">
                         <div class="col-sm-12 mb-3">
@@ -183,7 +182,7 @@ const onChangePicture = (e) => {
 
                     <div class="col-sm-12 mb-3">
                         <label for="formFile" class="form-label">User Image</label>
-                        <input class="form-control" type="file" id="formFile" name="image" onChange={onChangePicture} />
+                        <input class="form-control" type="file" id="formFile" name="file" onChange={onChangePicture} />
                     </div>
                     <div class="mb-3">
                         <label class={styles.option}>I agree to the <a href="#">Terms and Conditions</a>
